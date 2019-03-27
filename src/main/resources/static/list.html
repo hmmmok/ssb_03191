@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>列表界面</title>
+    <link rel="stylesheet" href="../js/bootstrap.min.css">
+    <link rel="stylesheet" href="../js/pagination.css">
+    <script type="text/javascript" src="../js/angular.min.js"></script>
+    <script type="text/javascript" src="../js/jquery-2.2.3.min.js"></script>
+    <script type="text/javascript" src="../js/base.js"></script>
+    <script type="text/javascript" src="../js/baseController.js"></script>
+    <script type="text/javascript" src="../js/pagination.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script type="text/javascript">
+        app.controller('studentController' ,function($scope,$http,$controller) {
+            $controller('baseController', {$scope: $scope});//继承
+                    $scope.findPage=function(page,size){
+                        $http.post('../list?pageNum='+page+'&pageSize='+size).success(
+                            function(response){
+                                $scope.list=response.rows;
+                                $scope.paginationConf. totalItems=response.total;
+                            }
+                        )
+                    };
+
+                $scope.stuObj;
+                $scope.save=function(){
+                    var flag="add";
+                    if($scope.stuObj.id!=null){
+                        flag="update";
+                    }
+                    $http.post(flag,$scope.stuObj).success(
+                   function(response){
+                       /*$scope.stuObj=response;*/
+                       if(response){
+                           alert("ok");
+                           location.reload();
+                       }else{
+                           alert("sorry");
+                       }
+
+                   }
+                    )
+                }
+              /*  $scope.update=function(){
+                    $http.post('../update',$scope.stuObj).success(
+                                function(response){
+                                    if(response){
+                                        alert("修改成功");
+                                       location.reload();
+                                    }else{
+                                        alert("修改失败")
+                                    }
+                                }
+                    )
+                }*/
+                //回显
+               $scope.findOne=function(id){
+                    $http.post('../findOne?id='+id).success(
+                          function(response){
+                             $scope.stuObj=response;
+                          }
+                    )
+               }
+                //删除
+                    $scope.del=function(id){
+                        $http.post('../del?id='+id).success(
+                                function(response){
+                                    if(response){
+                                        alert("删除成功!")
+                                        location.reload();
+                                    }else{
+                                        alert("删除失败")
+                                    }
+                                }
+                        )
+                    }
+
+        })
+        //全选
+        function qx(){
+            $(".ck").prop("checked",true);
+        }
+        //全不选
+        function qbx(){
+            $(".ck").prop("checked",false);
+        }
+        //反选
+        function fx(){
+            $(".ck").each(function(){
+                $(this).prop("checked",!$(this).prop("checked"));
+            })
+        }
+    </script>
+
+
+</head>
+<body ng-app="lhn"  ng-controller="studentController">
+        <div class="container">
+            {{stuObj}}
+                <table class="table table-hover table-boredered">
+                        <tr>
+                            <td>
+                                <button  class="btn btn-success" onclick="qx()">全选</button>
+                                <button  class="btn btn-success" onclick="qbx()">全不选</button>
+                                <button  class="btn btn-success" onclick="fx()">反选</button>
+                            </td>
+                            <td>编号</td>
+                            <td>姓名</td>
+                            <td>密码</td>
+                            <td>生日</td>
+                            <td>OPT
+                                <button class="btn btn-info" data-target="#editModal" data-toggle="modal" ng-click="add();stuObj={}">添加</button>                            </td>
+                        </tr>
+                    <tr ng-repeat="u in list">
+                            <td><input type="checkbox" class="ck" value="{{u.id}}"></td>
+                            <td>{{u.id}}</td>
+                            <td>{{u.name}}</td>
+                            <td>{{u.pwd}}</td>
+                            <td>{{u.birthday}}</td>
+                        <td class="text-center">
+                            <button type="button"
+                                    class="btn bg-olive btn-xs" data-toggle="modal"
+                                    data-target="#editModal" ng-click="findOne(u.id)">修改</button>
+                        <button class="btn btn-info" ng-click="del(u.id)">删除</button></td>
+                    </tr>
+
+                </table>
+                <tm-pagination conf="paginationConf"></tm-pagination>
+        </div>
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog"
+                     aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal"
+                                        aria-hidden="true">×</button>
+                                <h3 id="myModalLabel"></h3>
+                            </div>
+                            <div class="modal-body">
+                                <table class="table table-bordered table-striped" width="800px">
+                                    <tr>
+                                        <td>姓名</td>
+                                        <td><input class="form-control" placeholder="姓名"
+                                                   ng-model="stuObj.name"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>密码</td>
+                                        <td><input class="form-control" placeholder="密码"
+                                                   ng-model="stuObj.pwd"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>生日</td>
+                                        <td><input class="form-control" placeholder="生日"
+                                                   ng-model="stuObj.birthday"></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-success" data-dismiss="modal"
+                                        aria-hidden="true" ng-click="save()">保存</button>
+                                <button class="btn btn-default" data-dismiss="modal"
+                                        aria-hidden="true">关闭</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+</body>
+</html>

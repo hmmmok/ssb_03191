@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录页面</title>
+    <script type="text/javascript" src="../js/jquery-2.2.3.min.js"></script>
+    <script type="text/javascript">
+        function login(){
+
+            $.post(
+                "login",
+                $("form").serialize(),
+                function(obj){
+                    if(obj){
+                        alert("登录成功!")
+                        location="list.html";
+                    }else{
+                        alert("登录失败!")
+                    }
+                },
+                "json"
+            )
+        }
+    </script>
+</head>
+<body>
+            <form>
+                账号:<input type="text" name="name"><br>
+                密码:<input type="text" name="pwd">
+            </form>
+            <button onclick="login()">登录</button>
+</body>
+</html>
